@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stitch</title>
+</head>
+<body>
+    <h1>Stitch - Cross Stitch Pattern Manager</h1>
+    <form method="POST">
+        <input name="name" placeholder="Pattern name" required>
+        <input name="threads" placeholder="Threads (comma-separated)" required>
+        <button type="submit">Add Pattern</button>
+    </form>
+
+    <h2>Patterns:</h2>
+    <ul>
+        {% for pattern in patterns %}
+            <li><strong>{{ pattern.name }}</strong>: {{ pattern.threads|join(', ') }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
