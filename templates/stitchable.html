@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head><title>Stitchable Patterns</title></head>
+<body>
+  <h2>Patterns You Can Stitch</h2>
+
+  <ul>
+    {% for pattern in stitchable %}
+      <li><strong>{{ pattern.name }}</strong> — requires: {{ pattern.threads | join(', ') }}</li>
+    {% else %}
+      <p>No patterns match your current floss.</p>
+    {% endfor %}
+  </ul>
+
+  <p><a href="/logout">Log out</a></p>
+</body>
+</html>

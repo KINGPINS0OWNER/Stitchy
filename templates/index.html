@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Stitch</title>
-</head>
+<head><title>Stitch Patterns</title></head>
 <body>
-    <h1>Stitch - Cross Stitch Pattern Manager</h1>
-    <form method="POST">
-        <input name="name" placeholder="Pattern name" required>
-        <input name="threads" placeholder="Threads (comma-separated)" required>
-        <button type="submit">Add Pattern</button>
-    </form>
+  <h2>Saved Patterns</h2>
 
-    <h2>Patterns:</h2>
-    <ul>
-        {% for pattern in patterns %}
-            <li><strong>{{ pattern.name }}</strong>: {{ pattern.threads|join(', ') }}</li>
-        {% endfor %}
-    </ul>
+  <form method="POST">
+    <input type="text" name="name" placeholder="Pattern Name" required><br>
+    <input type="text" name="threads" placeholder="Floss codes (comma-separated)" required><br>
+    <button type="submit">Add Pattern</button>
+  </form>
+
+  <hr>
+  <ul>
+    {% for p in patterns %}
+      <li><strong>{{ p.name }}</strong> — Threads: {{ p.threads | join(', ') }}</li>
+    {% endfor %}
+  </ul>
+
+  <p><a href="/logout">Log out</a></p>
 </body>
 </html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head><title>Your Floss</title></head>
+<body>
+  <h2>Your Floss Inventory</h2>
+
+  <form method="POST">
+    <input type="text" name="code" placeholder="Floss Code" required><br>
+    <input type="number" step="0.1" name="length" placeholder="Length (yards)"><br>
+    <button type="submit">Add Floss</button>
+  </form>
+
+  <hr>
+  <ul>
+    {% for floss in flosses %}
+      <li>{{ floss.code }} — {{ floss.length }} yards</li>
+    {% endfor %}
+  </ul>
+
+  <p><a href="/logout">Log out</a></p>
+</body>
+</html>
