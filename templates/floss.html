@@ -1,22 +1,114 @@
 <!DOCTYPE html>
-<html>
-<head><title>Your Floss</title></head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Floss Inventory</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background: white;
+      padding: 2.5rem 3rem;
+      border-radius: 16px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.15);
+      width: 100%;
+      max-width: 500px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    button {
+      width: 100%;
+      background: linear-gradient(to right, #36d1dc, #5b86e5);
+      color: white;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: linear-gradient(to right, #5b86e5, #36d1dc);
+    }
+
+    ul {
+      margin-top: 2rem;
+      padding-left: 1rem;
+    }
+
+    li {
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+    }
+
+    .nav-link {
+      margin-top: 2rem;
+      text-align: center;
+    }
+
+    .nav-link a {
+      color: #2575fc;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .nav-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
 <body>
-  <h2>Your Floss Inventory</h2>
+  <div class="container">
+    <h2>Your Floss Inventory</h2>
 
-  <form method="POST">
-    <input type="text" name="code" placeholder="Floss Code" required><br>
-    <input type="number" step="0.1" name="length" placeholder="Length (yards)"><br>
-    <button type="submit">Add Floss</button>
-  </form>
+    <form method="POST">
+      <input type="text" name="code" placeholder="Floss Code" required>
+      <input type="number" step="0.1" name="length" placeholder="Length (yards)">
+      <button type="submit">Add Floss</button>
+    </form>
 
-  <hr>
-  <ul>
-    {% for floss in flosses %}
-      <li>{{ floss.code }} — {{ floss.length }} yards</li>
-    {% endfor %}
-  </ul>
+    <ul>
+      {% for floss in flosses %}
+        <li>{{ floss.code }} — {{ floss.length }} yards</li>
+      {% endfor %}
+    </ul>
 
-  <p><a href="/logout">Log out</a></p>
+    <div class="nav-link">
+      <a href="/logout">Log out</a> |
+      <a href="/">Back to Home</a>
+    </div>
+  </div>
 </body>
 </html>

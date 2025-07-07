@@ -1,22 +1,117 @@
 <!DOCTYPE html>
-<html>
-<head><title>Stitch Patterns</title></head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Your Patterns</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background: white;
+      padding: 2.5rem 3rem;
+      border-radius: 16px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.15);
+      width: 100%;
+      max-width: 600px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    button {
+      width: 100%;
+      background: linear-gradient(to right, #36d1dc, #5b86e5);
+      color: white;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: linear-gradient(to right, #5b86e5, #36d1dc);
+    }
+
+    ul {
+      margin-top: 2rem;
+      padding-left: 1rem;
+    }
+
+    li {
+      margin-bottom: 0.5rem;
+    }
+
+    .nav-link {
+      margin-top: 2rem;
+      text-align: center;
+    }
+
+    .nav-link a {
+      color: #2575fc;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .nav-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
 <body>
-  <h2>Saved Patterns</h2>
+  <div class="container">
+    <h2>Add a Cross-Stitch Pattern</h2>
+    <form method="POST" action="/">
+      <div class="form-group">
+        <label for="name">Pattern Name</label>
+        <input type="text" name="name" id="name" placeholder="e.g. Floral Mandala" required />
+      </div>
+      <div class="form-group">
+        <label for="threads">Floss Colors (comma-separated)</label>
+        <input type="text" name="threads" id="threads" placeholder="e.g. 310, 321, 550" required />
+      </div>
+      <button type="submit">Add Pattern</button>
+    </form>
 
-  <form method="POST">
-    <input type="text" name="name" placeholder="Pattern Name" required><br>
-    <input type="text" name="threads" placeholder="Floss codes (comma-separated)" required><br>
-    <button type="submit">Add Pattern</button>
-  </form>
+    <ul>
+      {% for pattern in patterns %}
+        <li><strong>{{ pattern.name }}</strong>: {{ pattern.threads | join(', ') }}</li>
+      {% endfor %}
+    </ul>
 
-  <hr>
-  <ul>
-    {% for p in patterns %}
-      <li><strong>{{ p.name }}</strong> — Threads: {{ p.threads | join(', ') }}</li>
-    {% endfor %}
-  </ul>
-
-  <p><a href="/logout">Log out</a></p>
+    <div class="nav-link">
+      <a href="floss.html">Go to Floss Inventory</a> |
+      <a href="/logout">Log Out</a>
+    </div>
+  </div>
 </body>
 </html>

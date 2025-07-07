@@ -1,18 +1,103 @@
 <!DOCTYPE html>
-<html>
-<head><title>Register</title></head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .register-container {
+      background: white;
+      padding: 2.5rem 3rem;
+      border-radius: 16px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.15);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    .register-btn {
+      width: 100%;
+      background: linear-gradient(to right, #36d1dc, #5b86e5);
+      color: white;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: background 0.3s ease;
+    }
+
+    .register-btn:hover {
+      background: linear-gradient(to right, #5b86e5, #36d1dc);
+    }
+
+    .login-link {
+      margin-top: 1rem;
+      text-align: center;
+    }
+
+    .login-link a {
+      color: #2575fc;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
 <body>
-  <h2>Register</h2>
-  {% with messages = get_flashed_messages() %}
-    {% for msg in messages %}
-      <p style="color:red;">{{ msg }}</p>
-    {% endfor %}
-  {% endwith %}
-  <form method="POST">
-    <input type="text" name="username" placeholder="Choose a username" required><br>
-    <input type="password" name="password" placeholder="Create a password" required><br>
-    <button type="submit">Register</button>
-  </form>
-  <p>Already have an account? <a href="/login">Login</a></p>
+  <div class="register-container">
+    <h2>Sign Up</h2>
+    <form method="POST" action="/register">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required />
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required />
+      </div>
+      <button type="submit" class="register-btn">Create Account</button>
+    </form>
+    <div class="login-link">
+      Already have an account? <a href="/login">Log In</a>
+    </div>
+  </div>
 </body>
 </html>

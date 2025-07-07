@@ -101,6 +101,38 @@ def logout():
     logout_user()
     return redirect("/login")
 
+@app.route("/floss", methods=["GET", "POST"])
+@login_required
+def floss():
+    if request.method == "POST":
+        code = request.form["code"]
+        length = float(request.form.get("length", 8.7))
+        # Save to DB or list (optional placeholder here)
+        flash("Floss added.")
+    flosses = []  # Replace with actual data
+    return render_template("floss.html", flosses=flosses)
+
+
+@app.route("/upload", methods=["GET", "POST"])
+@login_required
+def upload():
+    if request.method == "POST":
+        # Handle uploaded PDF
+        pdf_file = request.files.get("pdf")
+        if pdf_file:
+            flash("File uploaded successfully.")
+        else:
+            flash("Please select a file.")
+    return render_template("upload.html")
+
+
+@app.route("/stitchable")
+@login_required
+def stitchable():
+    stitchable_patterns = []  # Replace with logic based on available floss
+    return render_template("stitchable.html", stitchable=stitchable_patterns)
+
+
 # -------------------- App Launch --------------------
 if __name__ == "__main__":
     with app.app_context():
