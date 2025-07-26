@@ -1,9 +1,16 @@
-version: "3.8"
+version: "3.9"
 
 services:
-  stitch:
-    build: .
+  stitchy:
+    image: kingpins0owner/stitchy:latest
+    container_name: stitchy
     ports:
-      - "5000:5000"
+      - "5001:5000"
+    environment:
+      FLASK_APP: app.py
+      FLASK_RUN_HOST: 0.0.0.0
+      FLASK_ENV: production
     volumes:
+      - ./uploads:/app/static/uploads
       - ./data:/app/data
+    restart: unless-stopped
