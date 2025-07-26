@@ -1,17 +1,119 @@
 <!DOCTYPE html>
-<html>
-<head><title>Stitchable Patterns</title></head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Stitchable Patterns</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      min-height: 100vh;
+    }
+
+    header {
+      background: #1e1e2f;
+      color: white;
+      padding: 1rem 2rem;
+      position: relative;
+    }
+
+    .nav-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 25px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #ffffff;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: #66ccff;
+      text-decoration: underline;
+    }
+
+    .username {
+      position: absolute;
+      right: 2rem;
+      top: 1rem;
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+
+    .container {
+      background: white;
+      padding: 3rem;
+      margin: 4rem auto;
+      border-radius: 14px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      width: 90%;
+      max-width: 600px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-size: 1.6rem;
+    }
+
+    ul {
+      padding-left: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    li {
+      margin-bottom: 0.75rem;
+      font-size: 1rem;
+    }
+
+    .empty-message {
+      text-align: center;
+      font-style: italic;
+      color: #777;
+      margin-top: 1.5rem;
+    }
+  </style>
+</head>
 <body>
-  <h2>Patterns You Can Stitch</h2>
 
-  <ul>
-    {% for pattern in stitchable %}
-      <li><strong>{{ pattern.name }}</strong> — requires: {{ pattern.threads | join(', ') }}</li>
+  <header>
+    <div class="nav-wrapper">
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/floss">Floss Inventory</a>
+        <a href="/upload">Upload Pattern</a>
+        <a href="/logout">Log Out</a>
+      </div>
+    </div>
+    <div class="username">
+      Logged in as: <strong>{{ current_user.username }}</strong>
+    </div>
+  </header>
+
+  <div class="container">
+    <h2>Stitchable Patterns</h2>
+    {% if stitchable %}
+      <ul>
+        {% for pattern in stitchable %}
+          <li><strong>{{ pattern.name }}</strong>: {{ pattern.threads | join(', ') }}</li>
+        {% endfor %}
+      </ul>
     {% else %}
-      <p>No patterns match your current floss.</p>
-    {% endfor %}
-  </ul>
+      <p class="empty-message">No stitchable patterns found based on your current floss inventory.</p>
+    {% endif %}
+  </div>
 
-  <p><a href="/logout">Log out</a></p>
 </body>
 </html>

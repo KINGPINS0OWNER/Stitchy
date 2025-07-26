@@ -17,48 +17,58 @@
 
     .register-container {
       background: white;
-      padding: 2.5rem 3rem;
+      padding: 40px 30px;
       border-radius: 16px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.15);
+      box-shadow: 0 15px 25px rgba(0,0,0,0.1);
       width: 100%;
       max-width: 400px;
+      text-align: center;
     }
 
     h2 {
-      text-align: center;
-      margin-bottom: 1.5rem;
-    }
-
-    .form-group {
-      margin-bottom: 1.25rem;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
+      margin-bottom: 25px;
       font-weight: 600;
     }
 
-    input[type="text"],
-    input[type="password"] {
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
       width: 100%;
-      padding: 0.75rem;
+      max-width: 300px;
+      font-size: 14px;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: #333;
+      text-align: left;
+    }
+
+    .form-group input {
+      width: 100%;
+      max-width: 300px;
+      padding: 12px;
       border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1rem;
+      border-radius: 6px;
+      font-size: 14px;
     }
 
     .register-btn {
       width: 100%;
+      max-width: 300px;
       background: linear-gradient(to right, #36d1dc, #5b86e5);
       color: white;
-      padding: 0.75rem;
+      padding: 12px;
       border: none;
-      border-radius: 8px;
-      font-size: 1rem;
+      border-radius: 25px;
+      font-size: 16px;
+      font-weight: bold;
       cursor: pointer;
-      margin-top: 0.5rem;
       transition: background 0.3s ease;
+      margin-top: 10px;
     }
 
     .register-btn:hover {
@@ -66,14 +76,14 @@
     }
 
     .login-link {
-      margin-top: 1rem;
-      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
     }
 
     .login-link a {
       color: #2575fc;
       text-decoration: none;
-      font-weight: 500;
+      font-weight: 600;
     }
 
     .login-link a:hover {
@@ -87,11 +97,11 @@
     <form method="POST" action="/register">
       <div class="form-group">
         <label for="username">Username</label>
-        <input type="text" id="username" name="username" required />
+        <input type="text" id="username" name="username" placeholder="Choose a username" required />
       </div>
       <div class="form-group">
         <label for="password">Password</label>
-        <input type="password" id="password" name="password" required />
+        <input type="password" id="password" name="password" placeholder="Create a password" required />
       </div>
       <button type="submit" class="register-btn">Create Account</button>
     </form>

@@ -1,14 +1,213 @@
 <!DOCTYPE html>
-<html>
-<head><title>Upload Pattern</title></head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Upload Pattern</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      min-height: 100vh;
+    }
+
+    header {
+      background: #1e1e2f;
+      color: white;
+      padding: 1rem 2rem;
+      position: relative;
+    }
+
+    .nav-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 25px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #ffffff;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: #66ccff;
+      text-decoration: underline;
+    }
+
+    .username {
+      position: absolute;
+      right: 2rem;
+      top: 1rem;
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+
+    .container {
+      background: white;
+      padding: 2.5rem 3rem;
+      border-radius: 16px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+      width: 90%;
+      max-width: 500px;
+      margin: 4rem auto;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    input[type="text"],
+    input[type="file"],
+    input[type="number"] {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    .submit-btn {
+      width: 100%;
+      background: linear-gradient(to right, #36d1dc, #5b86e5);
+      color: white;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: background 0.3s ease;
+    }
+
+    .submit-btn:hover {
+      background: linear-gradient(to right, #5b86e5, #36d1dc);
+    }
+
+    .floss-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .floss-list {
+      background: #f5f5f5;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+
+    .floss-list li {
+      margin-bottom: 5px;
+    }
+
+    .add-btn {
+      background: #5b86e5;
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .add-btn:hover {
+      background: #2575fc;
+    }
+  </style>
+</head>
 <body>
-  <h2>Upload Pattern (PDF)</h2>
 
-  <form method="POST" enctype="multipart/form-data">
-    <input type="file" name="pattern" accept=".pdf" required><br>
-    <button type="submit">Upload</button>
-  </form>
+  <header>
+    <div class="nav-wrapper">
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/floss">Floss Inventory</a>
+        <a href="/stitchable">Stitchable</a>
+        <a href="/logout">Log Out</a>
+      </div>
+    </div>
+    <div class="username">
+      Logged in as: <strong>{{ current_user.username }}</strong>
+    </div>
+  </header>
 
-  <p><a href="/logout">Log out</a></p>
+  <div class="container">
+    <h2>Upload a Cross-Stitch Pattern</h2>
+    <form method="POST" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="name">Pattern Name</label>
+        <input type="text" name="name" id="name" required>
+      </div>
+
+      <div class="form-group">
+        <label>Floss Code & Yardage</label>
+        <div class="floss-row">
+          <input type="text" id="flossCode" placeholder="e.g. 123">
+          <input type="number" id="flossYard" placeholder="e.g. 9">
+          <button type="button" class="add-btn" onclick="addFloss()">+</button>
+        </div>
+        <ul class="floss-list" id="flossList"></ul>
+        <input type="hidden" name="floss_data" id="flossData">
+      </div>
+
+      <div class="form-group">
+        <label for="image">Upload Pattern Image (PDF or Image)</label>
+        <input type="file" name="image" id="image" accept="image/*,.pdf" required>
+      </div>
+
+      <button type="submit" class="submit-btn">Upload Pattern</button>
+    </form>
+  </div>
+
+  <script>
+    const flossList = [];
+    const listElement = document.getElementById("flossList");
+    const flossDataInput = document.getElementById("flossData");
+
+    function addFloss() {
+      const code = document.getElementById("flossCode").value.trim();
+      const yardage = document.getElementById("flossYard").value.trim();
+
+      if (!code || !yardage) return;
+
+      flossList.push({ code, yardage });
+      updateFlossDisplay();
+
+      // Clear inputs
+      document.getElementById("flossCode").value = "";
+      document.getElementById("flossYard").value = "";
+    }
+
+    function updateFlossDisplay() {
+      listElement.innerHTML = "";
+      flossList.forEach((item) => {
+        const li = document.createElement("li");
+        li.textContent = `${item.code} | ${item.yardage}y`;
+        listElement.appendChild(li);
+      });
+      flossDataInput.value = JSON.stringify(flossList);
+    }
+  </script>
 </body>
 </html>

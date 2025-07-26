@@ -2,116 +2,154 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Your Patterns</title>
+  <title>Cross-Stitch Gallery</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #6a11cb, #2575fc);
-      height: 100vh;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #1e1e2f;
+      color: white;
+      padding: 1rem 2rem;
+      position: relative;
+    }
+
+    .nav-wrapper {
       display: flex;
       justify-content: center;
       align-items: center;
     }
 
-    .container {
-      background: white;
-      padding: 2.5rem 3rem;
-      border-radius: 16px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.15);
-      width: 100%;
-      max-width: 600px;
+    .nav-links {
+      display: flex;
+      gap: 25px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #ffffff;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: #66ccff;
+      text-decoration: underline;
+    }
+
+    .username {
+      position: absolute;
+      right: 2rem;
+      top: 1rem;
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+
+    .gallery-container {
+      margin: 4rem auto;
+      width: 90%;
+      max-width: 1000px;
     }
 
     h2 {
       text-align: center;
-      margin-bottom: 1.5rem;
-    }
-
-    .form-group {
-      margin-bottom: 1.25rem;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-    }
-
-    input {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1rem;
-    }
-
-    button {
-      width: 100%;
-      background: linear-gradient(to right, #36d1dc, #5b86e5);
       color: white;
-      padding: 0.75rem;
-      border: none;
+      font-size: 1.8rem;
+      margin-bottom: 2rem;
+    }
+
+    .gallery-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .pattern-card {
+      background: #f9f9f9;
+      padding: 15px;
       border-radius: 8px;
-      font-size: 1rem;
+      width: 240px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .pattern-card img {
+      width: 100%;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+
+    .delete-btn {
+      background: #e74c3c;
+      color: white;
+      padding: 6px 10px;
+      border: none;
+      border-radius: 4px;
       cursor: pointer;
     }
 
-    button:hover {
-      background: linear-gradient(to right, #5b86e5, #36d1dc);
-    }
-
-    ul {
-      margin-top: 2rem;
-      padding-left: 1rem;
-    }
-
-    li {
-      margin-bottom: 0.5rem;
-    }
-
-    .nav-link {
-      margin-top: 2rem;
-      text-align: center;
-    }
-
-    .nav-link a {
-      color: #2575fc;
-      text-decoration: none;
-      font-weight: 500;
-    }
-
-    .nav-link a:hover {
-      text-decoration: underline;
+    .delete-btn:hover {
+      background: #c0392b;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Add a Cross-Stitch Pattern</h2>
-    <form method="POST" action="/">
-      <div class="form-group">
-        <label for="name">Pattern Name</label>
-        <input type="text" name="name" id="name" placeholder="e.g. Floral Mandala" required />
-      </div>
-      <div class="form-group">
-        <label for="threads">Floss Colors (comma-separated)</label>
-        <input type="text" name="threads" id="threads" placeholder="e.g. 310, 321, 550" required />
-      </div>
-      <button type="submit">Add Pattern</button>
-    </form>
 
-    <ul>
-      {% for pattern in patterns %}
-        <li><strong>{{ pattern.name }}</strong>: {{ pattern.threads | join(', ') }}</li>
+  <header>
+    <div class="nav-wrapper">
+      <div class="nav-links">
+        <a href="/floss">Floss Inventory</a>
+        <a href="/upload">Upload Pattern</a>
+        <a href="/stitchable">Stitchable</a>
+        <a href="/logout">Log Out</a>
+      </div>
+    </div>
+    <div class="username">
+      Logged in as: <strong>{{ current_user.username }}</strong>
+    </div>
+  </header>
+
+  <div class="gallery-container">
+    <h2>Uploaded Patterns</h2>
+    <div class="gallery-grid">
+      {% for pattern in db_patterns %}
+        <div class="pattern-card">
+          <h3>{{ pattern.name }}</h3>
+          {% if pattern.image_filename %}
+          {% if pattern.image_filename.endswith('.pdf') %}
+            <!-- Option 1: Show embedded PDF (nice inline viewer) -->
+            <embed src="{{ url_for('static', filename='uploads/' ~ pattern.image_filename) }}"
+                   type="application/pdf"
+                   width="100%"
+                   height="250px"
+                   style="border-radius: 6px; margin-bottom: 10px;">
+            
+            <!-- Option 2: Also give a clickable link -->
+            <div style="margin-top: 8px;">
+              <a href="{{ url_for('static', filename='uploads/' ~ pattern.image_filename) }}"
+                 target="_blank">📄 Open PDF in new tab</a>
+            </div>
+          {% else %}
+            <img src="{{ url_for('static', filename='uploads/' ~ pattern.image_filename) }}" alt="Pattern image">
+          {% endif %}
+        {% endif %}
+          <p><strong>Floss:</strong> {{ pattern.floss_codes }}</p>
+          <p><strong>Yardage:</strong> {{ pattern.floss_yardage }} yd</p>
+          <form method="POST" action="{{ url_for('delete_pattern', pattern_id=pattern.id) }}" onsubmit="return confirm('Delete this pattern?');">
+            <button type="submit" class="delete-btn">Delete</button>
+          </form>
+        </div>
       {% endfor %}
-    </ul>
-
-    <div class="nav-link">
-      <a href="floss.html">Go to Floss Inventory</a> |
-      <a href="/logout">Log Out</a>
     </div>
   </div>
+
 </body>
 </html>

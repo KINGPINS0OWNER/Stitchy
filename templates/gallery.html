@@ -1,0 +1,89 @@
+ <!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Your Pattern Gallery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      color: #333;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #fff;
+      margin-bottom: 30px;
+    }
+
+    .gallery-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 0 20px;
+    }
+
+    .pattern-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      text-align: center;
+      position: relative;
+    }
+
+    .pattern-card img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .pattern-card h3 {
+      margin: 10px 0 5px;
+    }
+
+    .pattern-card p {
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .delete-btn {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s ease-in-out;
+    }
+
+    .delete-btn:hover {
+      background-color: #c0392b;
+    }
+  </style>
+</head>
+<body>
+  <h1>Your Pattern Gallery</h1>
+  <div class="gallery-container">
+    {% for pattern in patterns %}
+      <div class="pattern-card">
+        {% if pattern.image_filename %}
+          <img src="{{ url_for('static', filename='uploads/' ~ pattern.image_filename) }}" alt="Pattern Image">
+        {% endif %}
+        <h3>{{ pattern.name }}</h3>
+        <p><strong>Floss Codes:</strong> {{ pattern.floss_codes }}</p>
+        <p><strong>Total Yardage:</strong> {{ pattern.floss_yardage }}</p>
+        <form method="POST" action="{{ url_for('delete_pattern', pattern_id=pattern.id) }}" onsubmit="return confirm('Are you sure you want to delete this pattern?');">
+          <button type="submit" class="delete-btn">Delete</button>
+        </form>
+      </div>
+    {% endfor %}
+  </div>
+</body>
+</html>
+--> 
