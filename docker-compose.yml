@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   stitchy:
     image: kingpins0owner/stitchy:latest
