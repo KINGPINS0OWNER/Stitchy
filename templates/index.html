@@ -103,53 +103,65 @@
 </head>
 <body>
 
-  <header>
-    <div class="nav-wrapper">
-      <div class="nav-links">
-        <a href="/floss">Floss Inventory</a>
-        <a href="/upload">Upload Pattern</a>
-        <a href="/stitchable">Stitchable</a>
-        <a href="/logout">Log Out</a>
-      </div>
+<header>
+  <div class="nav-wrapper">
+    <div class="nav-links">
+      <a href="/floss">Floss Inventory</a>
+      <a href="/upload">Upload Pattern</a>
+      <a href="/stitchable">Stitchable</a>
+      <a href="/logout">Log Out</a>
     </div>
-    <div class="username">
-      Logged in as: <strong>{{ current_user.username }}</strong>
-    </div>
-  </header>
+  </div>
+  <div class="username">
+    Logged in as: <strong>{{ current_user.username }}</strong>
+  </div>
+</header>
 
-  <div class="gallery-container">
-    <h2>Uploaded Patterns</h2>
-    <div class="gallery-grid">
-      {% for pattern in db_patterns %}
-        <div class="pattern-card">
-          <h3>{{ pattern.name }}</h3>
-          {% if pattern.image_filename %}
+<div class="gallery-container">
+  <h2>Uploaded Patterns</h2>
+  <div class="gallery-grid">
+    {% for pattern in db_patterns %}
+      <div class="pattern-card">
+        <h3>{{ pattern.name }}</h3>
+
+        {% if pattern.image_filename %}
           {% if pattern.image_filename.endswith('.pdf') %}
-            <!-- Option 1: Show embedded PDF (nice inline viewer) -->
             <embed src="{{ url_for('static', filename='uploads/' ~ pattern.image_filename) }}"
                    type="application/pdf"
                    width="100%"
                    height="250px"
                    style="border-radius: 6px; margin-bottom: 10px;">
-            
-            <!-- Option 2: Also give a clickable link -->
             <div style="margin-top: 8px;">
-              <a href="{{ url_for('static', filename='uploads/' ~ pattern.image_filename) }}"
-                 target="_blank">📄 Open PDF in new tab</a>
+              <a href="{{ url_for('static', filename='uploads/' ~ pattern.image_filename) }}" target="_blank">
+                📄 Open PDF in new tab
+              </a>
             </div>
           {% else %}
             <img src="{{ url_for('static', filename='uploads/' ~ pattern.image_filename) }}" alt="Pattern image">
           {% endif %}
         {% endif %}
-          <p><strong>Floss:</strong> {{ pattern.floss_codes }}</p>
-          <p><strong>Yardage:</strong> {{ pattern.floss_yardage }} yd</p>
-          <form method="POST" action="{{ url_for('delete_pattern', pattern_id=pattern.id) }}" onsubmit="return confirm('Delete this pattern?');">
-            <button type="submit" class="delete-btn">Delete</button>
-          </form>
-        </div>
-      {% endfor %}
-    </div>
+
+        {% if pattern.floss_data %}
+          <div style="text-align: left;">
+            <strong>Floss:</strong>
+            <ul style="padding-left: 1rem; margin: 6px 0;">
+              {% for floss in pattern.floss_data %}
+                <li>{{ floss.code }} — {{ floss.yardage }}y</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% else %}
+          <p><strong>Floss:</strong> None</p>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('delete_pattern', pattern_id=pattern.id) }}"
+              onsubmit="return confirm('Delete this pattern?');" style="margin-top: 10px;">
+          <button type="submit" class="delete-btn">Delete</button>
+        </form>
+      </div>
+    {% endfor %}
   </div>
+</div>
 
 </body>
 </html>

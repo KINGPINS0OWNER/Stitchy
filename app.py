@@ -3,10 +3,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-from flask import send_from_directory
 import os, json, uuid
 
-# Import your model and DB setup
+# Import config and model definitions
 import config
 from models import db, User, Pattern
 
@@ -14,6 +13,10 @@ from models import db, User, Pattern
 app = Flask(__name__)
 app.config.from_object(config)
 db.init_app(app)
+
+# Ensure UPLOAD_FOLDER is set
+if not app.config.get("UPLOAD_FOLDER"):
+    raise ValueError("UPLOAD_FOLDER is not set in the configuration.")
 
 # -------------------- Login Manager --------------------
 login_manager = LoginManager()
@@ -61,26 +64,22 @@ def get_floss_inventory():
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
 
-
 # -------------------- Routes --------------------
 
 @app.route("/", methods=["GET", "POST"])
 @login_required
 def home():
-    if request.method == "POST":
-        name = request.form["name"]
-        threads = request.form["threads"].split(",")
-        patterns = load_data()
-        patterns.append({
-            "name": name,
-            "threads": [t.strip() for t in threads]
-        })
-        save_data(patterns)
-        return redirect("/")
-
     patterns = load_data()
-    db_patterns = Pattern.query.filter_by(user_id=current_user.id).all()  # ✅ Add this
-    return render_template("index.html", patterns=patterns, db_patterns=db_patterns)  # ✅ Pass it in
+    db_patterns = Pattern.query.filter_by(user_id=current_user.id).all()
+
+    # Add decoded floss_data as an attribute to each pattern
+    for pattern in db_patterns:
+        try:
+            pattern._floss_data = json.loads(pattern.floss_codes or "[]")
+        except json.JSONDecodeError:
+            pattern._floss_data = []
+
+    return render_template("index.html", db_patterns=db_patterns)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -88,17 +87,17 @@ def register():
         username = request.form["username"].strip()
         password = request.form["password"]
 
-        existing_user = User.query.filter_by(username=username).first()
-        if existing_user:
+        if User.query.filter_by(username=username).first():
             flash("That username is already taken.")
             return redirect("/register")
 
-        hashed_password = generate_password_hash(password)
-        new_user = User(username=username, password=hashed_password)
+        new_user = User(
+            username=username,
+            password=generate_password_hash(password)
+        )
         db.session.add(new_user)
         db.session.commit()
-
-        flash("Account created! You can now log in.")
+        flash("Account created!")
         return redirect("/login")
 
     return render_template("register.html")
@@ -108,13 +107,12 @@ def login():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-
         user = User.query.filter_by(username=username).first()
+
         if user and check_password_hash(user.password, password):
             login_user(user)
             return redirect("/")
         flash("Invalid username or password.")
-        return redirect("/login")
 
     return render_template("login.html")
 
@@ -123,22 +121,6 @@ def login():
 def logout():
     logout_user()
     return redirect("/login")
-
-@app.route("/floss", methods=["GET", "POST"])
-@login_required
-def floss():
-    flosses = load_floss()
-    if request.method == "POST":
-        code = request.form["code"].strip()
-        length = float(request.form.get("length", 8.7))
-        flosses.append({"code": code, "length": length})
-        save_floss(flosses)
-        flash("Floss added.")
-        return redirect("/floss")
-
-    return render_template("floss.html", flosses=flosses)
-
-import json
 
 @app.route("/upload", methods=["GET", "POST"])
 @login_required
@@ -167,41 +149,40 @@ def upload():
         new_pattern = Pattern(
             name=name,
             floss_codes=json.dumps(floss_data),
-            floss_yardage="",  # Optional, if not using flat yardage
+            floss_yardage="",
             image_filename=filename,
             user_id=current_user.id
         )
         db.session.add(new_pattern)
         db.session.commit()
 
+        # Save to patterns.json
+        patterns = load_data()
+        patterns.append({
+            "name": name,
+            "floss_data": floss_data,
+            "image_filename": filename,
+            "user_id": current_user.id
+        })
+        save_data(patterns)
+
         flash("Pattern uploaded successfully.", "success")
         return redirect("/")
     return render_template("upload.html")
 
-
-@app.route("/gallery")
+@app.route("/floss", methods=["GET", "POST"])
 @login_required
-def gallery():
-    patterns = Pattern.query.filter_by(user_id=current_user.id).all()
-    return render_template("gallery.html", patterns=patterns)
+def floss():
+    flosses = load_floss()
+    if request.method == "POST":
+        code = request.form["code"].strip()
+        length = float(request.form.get("length", 8.7))
+        flosses.append({"code": code, "length": length})
+        save_floss(flosses)
+        flash("Floss added.")
+        return redirect("/floss")
 
-@app.route("/stitchable")
-@login_required
-def stitchable():
-    patterns = Pattern.query.all()
-    inventory = get_floss_inventory()
-
-    matchable = []
-    for pattern in patterns:
-        needed = [code.strip() for code in pattern.floss_codes.split(",")]
-        if all(code in inventory for code in needed):
-            matchable.append(pattern)
-
-    return render_template("stitchable.html", stitchable=matchable)
-
-
-
-
+    return render_template("floss.html", flosses=flosses)
 
 @app.route("/delete/<int:pattern_id>", methods=["POST"])
 @login_required
@@ -209,9 +190,9 @@ def delete_pattern(pattern_id):
     pattern = Pattern.query.filter_by(id=pattern_id, user_id=current_user.id).first()
     if not pattern:
         flash("Pattern not found.")
-        return redirect("/gallery")
+        return redirect("/")
 
-    # Delete uploaded file if it exists
+    # Remove file from disk if it exists
     if pattern.image_filename:
         file_path = os.path.join(app.config["UPLOAD_FOLDER"], pattern.image_filename)
         if os.path.exists(file_path):
@@ -219,20 +200,10 @@ def delete_pattern(pattern_id):
 
     db.session.delete(pattern)
     db.session.commit()
-    flash("Pattern deleted successfully.")
+    flash("Pattern deleted.")
     return redirect("/")
 
-@app.route("/floss/delete", methods=["POST"])
-@login_required
-def delete_floss():
-    code_to_delete = request.form.get("code")
-    flosses = load_floss()
-    flosses = [f for f in flosses if f["code"] != code_to_delete]
-    save_floss(flosses)
-    flash(f"Floss '{code_to_delete}' deleted.")
-    return redirect("/floss")
-
-
+    
 @app.route("/floss/edit_delete", methods=["POST"])
 @login_required
 def edit_or_delete_floss():
@@ -260,7 +231,25 @@ def edit_or_delete_floss():
     return redirect("/floss")
 
 
-# -------------------- App Launch --------------------
+@app.route("/stitchable")
+@login_required
+def stitchable():
+    patterns = Pattern.query.all()
+    inventory = get_floss_inventory()
+
+    matchable = []
+    for pattern in patterns:
+        try:
+            floss_list = json.loads(pattern.floss_codes or "[]")
+            floss_codes = [f["code"] for f in floss_list]
+            if all(code in inventory for code in floss_codes):
+                matchable.append(pattern)
+        except Exception:
+            continue
+
+    return render_template("stitchable.html", stitchable=matchable)
+
+# -------------------- Launch --------------------
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()

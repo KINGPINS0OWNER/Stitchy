@@ -157,14 +157,14 @@
     <form method="POST" enctype="multipart/form-data">
       <div class="form-group">
         <label for="name">Pattern Name</label>
-        <input type="text" name="name" id="name" required>
+        <input type="text" name="name" id="name" required aria-label="Pattern Name">
       </div>
 
       <div class="form-group">
         <label>Floss Code & Yardage</label>
         <div class="floss-row">
-          <input type="text" id="flossCode" placeholder="e.g. 123">
-          <input type="number" id="flossYard" placeholder="e.g. 9">
+          <input type="text" id="flossCode" placeholder="e.g. 123" aria-label="Floss Code">
+          <input type="number" id="flossYard" placeholder="e.g. 9" aria-label="Floss Yardage">
           <button type="button" class="add-btn" onclick="addFloss()">+</button>
         </div>
         <ul class="floss-list" id="flossList"></ul>
@@ -173,7 +173,7 @@
 
       <div class="form-group">
         <label for="image">Upload Pattern Image (PDF or Image)</label>
-        <input type="file" name="image" id="image" accept="image/*,.pdf" required>
+        <input type="file" name="image" id="image" accept="image/*,.pdf" required aria-label="Upload Pattern Image">
       </div>
 
       <button type="submit" class="submit-btn">Upload Pattern</button>
@@ -189,7 +189,10 @@
       const code = document.getElementById("flossCode").value.trim();
       const yardage = document.getElementById("flossYard").value.trim();
 
-      if (!code || !yardage) return;
+      if (!code || !yardage || isNaN(yardage)) {
+        alert("Please enter valid floss code and numeric yardage.");
+        return;
+      }
 
       flossList.push({ code, yardage });
       updateFlossDisplay();
@@ -203,11 +206,16 @@
       listElement.innerHTML = "";
       flossList.forEach((item) => {
         const li = document.createElement("li");
-        li.textContent = `${item.code} | ${item.yardage}y`;
+        li.textContent = `${item.code} — ${item.yardage}y`;
         listElement.appendChild(li);
       });
       flossDataInput.value = JSON.stringify(flossList);
     }
+  </script>
+  <script>
+    document.querySelector("form").addEventListener("submit", function () {
+      flossDataInput.value = JSON.stringify(flossList);
+    });
   </script>
 </body>
 </html>
